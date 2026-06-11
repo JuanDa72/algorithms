@@ -46,7 +46,7 @@ def find_maximum_subarray(A, low, high):
             return (cross_low, cross_high, cross_sum)
 
 
-A = [-2,1,-3,4,-1,2,1,-5,4]
+A = [1, -2, 3, 4, -1, 2]
 
 low, high, total = find_maximum_subarray(A, 0, len(A)-1)
 

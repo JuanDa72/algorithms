@@ -71,23 +71,22 @@ def l_bin(a,b):
     new_b=sum_bin(b, [1])
     result=sum_bin(a, new_b)
     result_r=list(map(str, result))
-    if len(result_r)>len(a):
-        result_r.pop(0)
-        #print("".join(result_r))
-        return result.pop(0)
+    if len(result_r) > len(a):
+        return result[1:]  # descarta el primer bit y retorna el resto como lista
     else:
-        #print("".join(result_r))
         return result
 
 
-def karatsuba_bin(a,b):
+def karatsuba_bin(a, b):
+    if len(a)==1 and len(b)==1:
+        return [a[0]*b[0]]
+
     len_a=len(a)
     len_b=len(b)
     m=max(len_a,len_b)
+
     if m%2==0:
         if len_a!=len_b:
-            l=min(len(a),len(b))
-            m=max(len(a),len(b))
             a=a[::-1]
             b=b[::-1]
             i=0
@@ -97,16 +96,12 @@ def karatsuba_bin(a,b):
                     a.append(0)
                 if j>=len_b:
                     b.append(0)
-
                 i+=1
                 j+=1
-
             a=a[::-1]
             b=b[::-1]
-
     else:
         new_len=m+1
-        l=min(len(a),len(b))
         a=a[::-1]
         b=b[::-1]
         i=0
@@ -116,41 +111,43 @@ def karatsuba_bin(a,b):
                 a.append(0)
             if j>=len_b:
                 b.append(0)
-
             i+=1
             j+=1
-
         a=a[::-1]
         b=b[::-1]
 
-    if len(a)==1:
-        return a[0]*b[0]
-    
-    else:
-        q=(len(a))//2
-        a_1=a[:q]
-        b_1=a[q:len(a)]
-        c=b[:q]
-        d=b[q:len(b)]
+    q=(len(a))//2
+    a_high=a[:q]
+    a_low=a[q:len(a)]
+    b_high=b[:q]
+    b_low=b[q:len(b)]
 
-        ac=karatsuba_bin(a_1,c)
-        bd=karatsuba_bin(b_1,d)
-        a_sum_b=sum_bin(a_1,b_1)
-        c_sum_d=sum_bin(c,d)
-        x_sum_y=sum_bin(a,b)
+    ac=karatsuba_bin(a_high, b_high)
+    bd=karatsuba_bin(a_low, b_low)
+    a_sum=sum_bin(a_high, a_low)
+    b_sum=sum_bin(b_high, b_low)
+    z_p=karatsuba_bin(a_sum, b_sum)
 
-        z_p=karatsuba_bin(a_sum_b,c_sum_d)
-        z_m=karatsuba_bin(z_p, x_sum_y)
+    pr=l_bin(z_p, ac)
+    z_m=l_bin(pr, bd)
 
-        result=ac*(2**(2*q))+z_m*(2**q)+bd
-        result_s=list(map(str, result))
-        print("".join(result_s))
+    ac_c=ac+[0]*(2*q)
+    zm_c=z_m+[0]*q
+
+    result=sum_bin(sum_bin(ac_c, zm_c), bd)
+    #result_s=list(map(str, result))
+    #print("".join(result_s))
+    while len(result) > 1 and result[0] == 0:
+        result.pop(0)
+    return result
+
 
 
 a=list(map(int, list(input())))
 b=list(map(int, list(input())))
 
-karatsuba_bin(a,b)
-
+f_result=karatsuba_bin(a,b)
+result_s=list(map(str, f_result))
+print("".join(result_s))
 
 
